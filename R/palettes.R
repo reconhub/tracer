@@ -22,7 +22,7 @@
 ##'      main="palette: pal1")
 ##'
 pal1 <- function(n){ # purple
-    if(!is.numeric(n)) stop("n is not a number")
+    if(!is.numeric(n)) stop("'n' is not a number.")
     colors <- c("#400080", "#e6ccff")
     return(colorRampPalette(colors)(n))
 }
