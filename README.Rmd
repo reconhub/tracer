@@ -13,6 +13,12 @@ knitr::opts_chunk$set(
 
 
 
+[![Travis-CI Build Status](https://travis-ci.org/reconhub/tracer.svg?branch=master)](https://travis-ci.org/reconhub/tracer)
+
+[![Coverage Status](https://img.shields.io/codecov/c/github/reconhub/tracer/master.svg)](https://codecov.io/github/reconhub/tracer?branch=master)
+
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/tracer)](https://cran.r-project.org/package=tracer)
+
 
 <br>
 # Installing the package
