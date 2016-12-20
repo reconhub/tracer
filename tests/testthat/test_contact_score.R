@@ -6,9 +6,9 @@ test_that("contact_score gives expected errors", {
 
     w <- distcrete("gamma", 1L, w = 0, 10, 0.65)$d
     
-    msg <- "All values in 'onset' need to be finite, non-NA numbers."
+    msg <- "All values in 'x' need to be finite, non-NA numbers."
     expect_error(contact_score(NA, 2, 0, SI$d), msg)
-    msg <- "'onset' must have at least one value."
+    msg <- "'x' must have at least one value."
     expect_error(contact_score(integer(0), 2, 0, SI$d), msg)
     msg <- "'R' cannot be less than 0."
     expect_error(contact_score(0, -1, 0, SI$d), msg)
@@ -26,12 +26,12 @@ test_that("contact_score gives expected errors", {
 test_that("contact_score gives expected answers", {
     skip_on_cran()
 
-    SI <- distcrete("gamma", 1L, w = 0, 10, 0.65)
+    SI <- distcrete("gamma", 1L, w = 0, 10, 0.65)$d
 
-    f <- contact_score(0, 2, 3, SI$d)
+    f <- contact_score(0, 2, 3, SI)
 
     ## corner cases
-    expect_equal(contact_score(0, 0, 3, SI$d)(10), 0)
+    expect_equal(contact_score(0, 0, 3, SI)(10), 0)
 })
 
 

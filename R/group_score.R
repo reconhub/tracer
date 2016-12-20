@@ -1,28 +1,19 @@
-#' Compute the tracing score of a contact
+#' Compute the tracing score of a group of contacts
 #'
-#' This function compute the tracing score of a contact, i.e. an individual who
-#' has had at least one recorded exposure to a case. For a contact, the tracing
-#' score is defined as the probability that this individual will show symptoms
-#' for the first time on day 't'.
+#' This function compute the tracing score of a group of contacts, i.e. a set of
+#' individual who have been exposed to one or several cases whose dates of
+#' onsets are known. The tracing score is defined as the expected number of
+#' individuals that will show symptoms for the first time on day 't'.
 #'
 #' @export
 #'
 #' @author Thibaut Jombart (\email{thibautjombart@@gmail.com})
 #'
-#' @param x A vector of integers indicating dates of onset of the cases
-#'     causing exposure.
-#'
-#' @param R The average effective reproduction number, i.e. the average number
-#'     of secondar cases seeded by an infected individual.
-#'
-#' @param lambda The average number of contacts (infectious or not) reported by
-#'     cases.
-#'
-#' @param w The probability mass function of the serial interval, i.e. the delay
-#'     from primary to secondary symptom onset. We recommend using the
-#'     \code{distcrete} package to generate discretized distributions (see
-#'     details).
-#'
+#' @inheritParams contact_score
+#' 
+#' @param x A list of integer vectors indicating dates of onset of the cases
+#'     causing exposure. Each item of the list corresponds to a different
+#'     individual.
 #'
 #' @details See the \code{distcrete} package for generating discretized
 #'     distributions at: \url{http://github.com/reconhub/distcrete}.
@@ -53,15 +44,15 @@
 #'       xlab = "Date", ylab = "P(new symptoms)")
 #'  title("Contact score over time")
 #' }
-contact_score <- function(x, R, lambda, w) {
+group_score <- function(x, R, lambda, w) {
     ## The returned object will be a function with enclosed data; its only
     ## argument 't' is a vector of integer dates for which the tracing score is
     ## computed.
 
     if (length(x) < 1) {
-        stop("'x' must have at least one value.")
+        stop("'x' must contain at least one item.")
     }
-    if (any(!is.finite(x))) {
+    if (any(!is.finite(unlist(x)))) {
         stop("All values in 'x' need to be finite, non-NA numbers.")
     }
     if (!is.finite(R)) {
@@ -82,10 +73,22 @@ contact_score <- function(x, R, lambda, w) {
 
     ## Rc is the probability that an exposure leads to a new case.
     Rc <- min(R / lambda, 1)
+
+    ## This function computes p(x_i = t) for one individual
+    score_one_indiv <- function(onset, Rc, w, t) {
+        if (length(t) > 1) {
+            rates <- Rc * vapply(t, function(day) sum(w(day - onset)), double(1))
+            1 - exp(-rates)
+        } else {
+            rate <- Rc * sum(w(t - onset))
+            1 - exp(-rate)
+        }
+    }
+
     
-    function(t) { 
-        rates <- Rc * vapply(t, function(day) sum(w(day - x)), double(1))
-        1 - exp(-rates)
+    function(t) {
+        indiv_scores_over_t <- lapply(x, score_one_indiv, Rc, w, t)
+        Reduce("+", indiv_scores_over_t)
     }
 }
 
