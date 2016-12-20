@@ -17,7 +17,7 @@
 To benefit from the latest features and bug fixes, install the development, *github* version of the package using:
 
 ```r
-devtools::install_github("thibautjombart/tracer")
+devtools::install_github("reconhub/tracer")
 ```
 
 Note that this requires the package *devtools* installed.
