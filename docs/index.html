@@ -109,23 +109,21 @@ SI &lt;-<span class="st"> </span>SI.info$d
 <p>For instance, using the parameters defined above, and 3 exposures to cases with onset on days 3, 12, and 34:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">f &lt;-<span class="st"> </span><span class="kw"><a href="reference/contact_score.html">contact_score</a></span>(<span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">12</span>, <span class="dv">24</span>), R, lambda, SI)
 f
-<span class="co">#&gt; function (t, visit_days_ago = 1L) </span>
-<span class="co">#&gt; {</span>
-<span class="co">#&gt;     if (visit_days_ago &lt; 1L) {</span>
-<span class="co">#&gt;         stop("'visit_days_ago' cannot be less than 1.")</span>
+<span class="co">#&gt; function(t, visit_days_ago = 1L) {</span>
+<span class="co">#&gt;         if (visit_days_ago &lt; 1L) {</span>
+<span class="co">#&gt;             stop("'visit_days_ago' cannot be less than 1.")</span>
+<span class="co">#&gt;         }</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;         days_ago_to_consider &lt;- seq(0, visit_days_ago - 1L, by = 1L)</span>
+<span class="co">#&gt;         days_list &lt;- lapply(days_ago_to_consider, function(i) t - i)</span>
+<span class="co">#&gt;         out &lt;- double(length(t))</span>
+<span class="co">#&gt;         for (days in days_list) {</span>
+<span class="co">#&gt;             rates &lt;- Rc * vapply(days, function(day) sum(w(day - x)), double(1))</span>
+<span class="co">#&gt;             out &lt;- out + 1 - exp(-rates)</span>
+<span class="co">#&gt;         }</span>
+<span class="co">#&gt;         out</span>
 <span class="co">#&gt;     }</span>
-<span class="co">#&gt;     days_ago_to_consider &lt;- seq(0, visit_days_ago - 1L, by = 1L)</span>
-<span class="co">#&gt;     days_list &lt;- lapply(days_ago_to_consider, function(i) t - </span>
-<span class="co">#&gt;         i)</span>
-<span class="co">#&gt;     out &lt;- double(length(t))</span>
-<span class="co">#&gt;     for (days in days_list) {</span>
-<span class="co">#&gt;         rates &lt;- Rc * vapply(days, function(day) sum(w(day - </span>
-<span class="co">#&gt;             x)), double(1))</span>
-<span class="co">#&gt;         out &lt;- out + 1 - exp(-rates)</span>
-<span class="co">#&gt;     }</span>
-<span class="co">#&gt;     out</span>
-<span class="co">#&gt; }</span>
-<span class="co">#&gt; &lt;environment: 0x55e308bef3d8&gt;</span>
+<span class="co">#&gt; &lt;environment: 0x55e306fb8b40&gt;</span>
 
 ## score on day 10:
 <span class="kw">f</span>(<span class="dv">10</span>)
@@ -136,7 +134,7 @@ f
 <span class="co">#&gt; [1] 0.07796896 0.07592696 0.07186847</span>
 
 ## plotting scores over time
-<span class="kw">plot</span>(f, <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">60</span>), <span class="dt">type =</span> <span class="st">"h"</span>, <span class="dt">col =</span> <span class="kw"><a href="reference/pal1.html">pal1</a></span>(<span class="dv">80</span>), 
+<span class="kw">plot</span>(f, <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">60</span>), <span class="dt">type =</span> <span class="st">"h"</span>, <span class="dt">col =</span> <span class="kw"><a href="reference/pal1.html">pal1</a></span>(<span class="dv">100</span>), 
      <span class="dt">main =</span> <span class="st">"Tracing score over time"</span>, 
      <span class="dt">xlab =</span> <span class="st">"Scoring date"</span>, <span class="dt">ylab =</span> <span class="st">"p(new symptoms)"</span>)</code></pre></div>
 <p><img src="figs/contact_score-1.png" width="768"></p>

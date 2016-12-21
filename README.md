@@ -141,23 +141,21 @@ For instance, using the parameters defined above, and 3 exposures to cases with 
 ```r
 f <- contact_score(c(3, 12, 24), R, lambda, SI)
 f
-#> function (t, visit_days_ago = 1L) 
-#> {
-#>     if (visit_days_ago < 1L) {
-#>         stop("'visit_days_ago' cannot be less than 1.")
+#> function(t, visit_days_ago = 1L) {
+#>         if (visit_days_ago < 1L) {
+#>             stop("'visit_days_ago' cannot be less than 1.")
+#>         }
+#> 
+#>         days_ago_to_consider <- seq(0, visit_days_ago - 1L, by = 1L)
+#>         days_list <- lapply(days_ago_to_consider, function(i) t - i)
+#>         out <- double(length(t))
+#>         for (days in days_list) {
+#>             rates <- Rc * vapply(days, function(day) sum(w(day - x)), double(1))
+#>             out <- out + 1 - exp(-rates)
+#>         }
+#>         out
 #>     }
-#>     days_ago_to_consider <- seq(0, visit_days_ago - 1L, by = 1L)
-#>     days_list <- lapply(days_ago_to_consider, function(i) t - 
-#>         i)
-#>     out <- double(length(t))
-#>     for (days in days_list) {
-#>         rates <- Rc * vapply(days, function(day) sum(w(day - 
-#>             x)), double(1))
-#>         out <- out + 1 - exp(-rates)
-#>     }
-#>     out
-#> }
-#> <environment: 0x55e3083b9cb0>
+#> <environment: 0x55e3097524b8>
 
 ## score on day 10:
 f(10)
@@ -168,10 +166,9 @@ f(24:26)
 #> [1] 0.07796896 0.07592696 0.07186847
 
 ## plotting scores over time
-plot(f, xlim = c(0, 60), type = "h", col = pal(80), 
+plot(f, xlim = c(0, 60), type = "h", col = pal1(100), 
      main = "Tracing score over time", 
      xlab = "Scoring date", ylab = "p(new symptoms)")
-#> Error in plot.xy(xy, type, ...): could not find function "pal"
 ```
 
 ![plot of chunk contact_score](figs/contact_score-1.png)
@@ -218,10 +215,9 @@ g(c(10,20,30)) # Exp nb of new cases at t=10,20,30
 #> [1] 0.1973302 2.1070930 2.5574013
 
 
-plot(g, xlim = c(0, 100), type = "h", , col = pal(80), 
+plot(g, xlim = c(0, 100), type = "h", , col = pal1(80), 
      main = "Expected number of new cases", 
      xlab = "Current time", ylab = "Number of cases")
-#> Error in plot.xy(xy, type, ...): could not find function "pal"
 ```
 
 ![plot of chunk unnamed-chunk-2](figs/unnamed-chunk-2-1.png)

@@ -144,7 +144,7 @@ f(10)
 f(24:26)
 
 ## plotting scores over time
-plot(f, xlim = c(0, 60), type = "h", col = pal1(80), 
+plot(f, xlim = c(0, 60), type = "h", col = pal1(100), 
      main = "Tracing score over time", 
      xlab = "Scoring date", ylab = "p(new symptoms)")
 
