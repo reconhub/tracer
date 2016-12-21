@@ -13,3 +13,7 @@ Imports: stats, epicontacts
 Suggests: distcrete,
     covr,
     testthat
+
+Remotes:
+  reconhub/distcrete,
+  reconhub/epicontacts
