@@ -41,34 +41,37 @@
 #'  plot(SI, type="h", xlim=c(0,50), xlab = "Days")
 #'  title("Serial interval distribution")
 #'
-#' ## get scoring function
-#' g <- group_score(x, R, lambda, SI$d)
-#' g(c(10,20,30)) # Exp nb of new cases at t=10,20,30
+#'  R <- 2.3
+#'  lambda <- 3
+#' 
+#'  ## get scoring function
+#'  g <- group_score(x, R, lambda, SI)
+#'  g(c(10,20,30)) # Exp nb of new cases at t=10,20,30
 #'
-#' plot(g, xlim = c(0, 100), type = "h", 
-#'     main = "Expected number of new cases", 
-#'     xlab = "Current time", ylab = "Number of cases")
+#'  plot(g, xlim = c(0, 100), type = "h", 
+#'      main = "Expected number of new cases", 
+#'      xlab = "Current time", ylab = "Number of cases")
 #'
-#' set.seed(1)
-#' ## early wave
-#' x1 <- replicate(30, sample(0:20, sample(1:6), replace = TRUE))
+#'  set.seed(1)
+#'  ## early wave
+#'  x1 <- replicate(30, sample(0:20, sample(1:6), replace = TRUE))
 #'
-#' ## large middle wave
-#' x2 <- replicate(140, sample(15:70, sample(1:3), replace = TRUE))
+#'  ## large middle wave
+#'  x2 <- replicate(140, sample(15:70, sample(1:3), replace = TRUE))
 #'
-#' ## late wave
-#' x3 <- replicate(140, sample(65:80, sample(1:4), replace = TRUE))
+#'  ## late wave
+#'  x3 <- replicate(140, sample(65:80, sample(1:4), replace = TRUE))
 #'
-#' ## get scoring functions for every group
-#' list_g <- lapply(list(x1, x2, x3), group_score, R, lambda, SI$d)
+#'  ## get scoring functions for every group
+#'  list_g <- lapply(list(x1, x2, x3), group_score, R, lambda, SI)
 #'
-#' ## get predictions for days 1:120
-#' pred_nb_cases <- sapply(list_g, function(g) g(1:120))
+#'  ## get predictions for days 1:120
+#'  pred_nb_cases <- sapply(list_g, function(g) g(1:120))
 #'
-#' barplot(t(pred_nb_cases), col = pal1(3), border = "grey", 
-#'         main = "Predicted new cases per groups", xlab = "Current time", 
-#'         ylab = "Number of new cases (stacked)")
-#' axis(side=1)
+#'  barplot(t(pred_nb_cases), col = pal1(3), border = "grey", 
+#'          main = "Predicted new cases per groups", xlab = "Current time", 
+#'          ylab = "Number of new cases (stacked)")
+#'  axis(side=1)
 #' 
 #' }
 group_score <- function(x, R, lambda, w) {
