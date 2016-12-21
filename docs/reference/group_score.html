@@ -127,36 +127,39 @@ day before <code>t</code>.</p>
  <span class='fu'>plot</span>(<span class='no'>SI</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>"h"</span>, <span class='kw'>xlim</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>0</span>,<span class='fl'>50</span>), <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Days"</span>)
  <span class='fu'>title</span>(<span class='st'>"Serial interval distribution"</span>)
 
-<span class='co'>## get scoring function</span>
-<span class='no'>g</span> <span class='kw'>&lt;-</span> <span class='fu'>group_score</span>(<span class='no'>x</span>, <span class='no'>R</span>, <span class='no'>lambda</span>, <span class='no'>SI</span>$<span class='no'>d</span>)
-<span class='fu'>g</span>(<span class='fu'>c</span>(<span class='fl'>10</span>,<span class='fl'>20</span>,<span class='fl'>30</span>)) <span class='co'># Exp nb of new cases at t=10,20,30</span>
+ <span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fl'>2.3</span>
+ <span class='no'>lambda</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>
 
-<span class='fu'>plot</span>(<span class='no'>g</span>, <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>100</span>), <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"h"</span>,
-    <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"Expected number of new cases"</span>,
-    <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Current time"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"Number of cases"</span>)
+ <span class='co'>## get scoring function</span>
+ <span class='no'>g</span> <span class='kw'>&lt;-</span> <span class='fu'>group_score</span>(<span class='no'>x</span>, <span class='no'>R</span>, <span class='no'>lambda</span>, <span class='no'>SI</span>)
+ <span class='fu'>g</span>(<span class='fu'>c</span>(<span class='fl'>10</span>,<span class='fl'>20</span>,<span class='fl'>30</span>)) <span class='co'># Exp nb of new cases at t=10,20,30</span>
 
-<span class='fu'>set.seed</span>(<span class='fl'>1</span>)
-<span class='co'>## early wave</span>
-<span class='no'>x1</span> <span class='kw'>&lt;-</span> <span class='fu'>replicate</span>(<span class='fl'>30</span>, <span class='fu'>sample</span>(<span class='fl'>0</span>:<span class='fl'>20</span>, <span class='fu'>sample</span>(<span class='fl'>1</span>:<span class='fl'>6</span>), <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))
+ <span class='fu'>plot</span>(<span class='no'>g</span>, <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>100</span>), <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"h"</span>,
+     <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"Expected number of new cases"</span>,
+     <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Current time"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"Number of cases"</span>)
 
-<span class='co'>## large middle wave</span>
-<span class='no'>x2</span> <span class='kw'>&lt;-</span> <span class='fu'>replicate</span>(<span class='fl'>140</span>, <span class='fu'>sample</span>(<span class='fl'>15</span>:<span class='fl'>70</span>, <span class='fu'>sample</span>(<span class='fl'>1</span>:<span class='fl'>3</span>), <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))
+ <span class='fu'>set.seed</span>(<span class='fl'>1</span>)
+ <span class='co'>## early wave</span>
+ <span class='no'>x1</span> <span class='kw'>&lt;-</span> <span class='fu'>replicate</span>(<span class='fl'>30</span>, <span class='fu'>sample</span>(<span class='fl'>0</span>:<span class='fl'>20</span>, <span class='fu'>sample</span>(<span class='fl'>1</span>:<span class='fl'>6</span>), <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))
 
-<span class='co'>## late wave</span>
-<span class='no'>x3</span> <span class='kw'>&lt;-</span> <span class='fu'>replicate</span>(<span class='fl'>140</span>, <span class='fu'>sample</span>(<span class='fl'>65</span>:<span class='fl'>80</span>, <span class='fu'>sample</span>(<span class='fl'>1</span>:<span class='fl'>4</span>), <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))
+ <span class='co'>## large middle wave</span>
+ <span class='no'>x2</span> <span class='kw'>&lt;-</span> <span class='fu'>replicate</span>(<span class='fl'>140</span>, <span class='fu'>sample</span>(<span class='fl'>15</span>:<span class='fl'>70</span>, <span class='fu'>sample</span>(<span class='fl'>1</span>:<span class='fl'>3</span>), <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))
 
-<span class='co'>## get scoring functions for every group</span>
-<span class='no'>list_g</span> <span class='kw'>&lt;-</span> <span class='fu'>lapply</span>(<span class='fu'>list</span>(<span class='no'>x1</span>, <span class='no'>x2</span>, <span class='no'>x3</span>), <span class='no'>group_score</span>, <span class='no'>R</span>, <span class='no'>lambda</span>, <span class='no'>SI</span>$<span class='no'>d</span>)
+ <span class='co'>## late wave</span>
+ <span class='no'>x3</span> <span class='kw'>&lt;-</span> <span class='fu'>replicate</span>(<span class='fl'>140</span>, <span class='fu'>sample</span>(<span class='fl'>65</span>:<span class='fl'>80</span>, <span class='fu'>sample</span>(<span class='fl'>1</span>:<span class='fl'>4</span>), <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))
 
-<span class='co'>## get predictions for days 1:120</span>
-<span class='no'>pred_nb_cases</span> <span class='kw'>&lt;-</span> <span class='fu'>sapply</span>(<span class='no'>list_g</span>, <span class='kw'>function</span>(<span class='no'>g</span>) <span class='fu'>g</span>(<span class='fl'>1</span>:<span class='fl'>120</span>))
+ <span class='co'>## get scoring functions for every group</span>
+ <span class='no'>list_g</span> <span class='kw'>&lt;-</span> <span class='fu'>lapply</span>(<span class='fu'>list</span>(<span class='no'>x1</span>, <span class='no'>x2</span>, <span class='no'>x3</span>), <span class='no'>group_score</span>, <span class='no'>R</span>, <span class='no'>lambda</span>, <span class='no'>SI</span>)
 
-<span class='fu'>barplot</span>(<span class='fu'>t</span>(<span class='no'>pred_nb_cases</span>), <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='pal1.html'>pal1</a></span>(<span class='fl'>3</span>), <span class='kw'>border</span> <span class='kw'>=</span> <span class='st'>"grey"</span>,
-        <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"Predicted new cases per groups"</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Current time"</span>,
-        <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"Number of new cases (stacked)"</span>)
-<span class='fu'>axis</span>(<span class='kw'>side</span><span class='kw'>=</span><span class='fl'>1</span>)
+ <span class='co'>## get predictions for days 1:120</span>
+ <span class='no'>pred_nb_cases</span> <span class='kw'>&lt;-</span> <span class='fu'>sapply</span>(<span class='no'>list_g</span>, <span class='kw'>function</span>(<span class='no'>g</span>) <span class='fu'>g</span>(<span class='fl'>1</span>:<span class='fl'>120</span>))
 
-}</div><div class='output co'>#&gt; <span class='error'>Error in group_score(x, R, lambda, SI$d): object &#39;R&#39; not found</span></div><img src='group_score-3.png' alt='' width='540' height='400' /></pre>
+ <span class='fu'>barplot</span>(<span class='fu'>t</span>(<span class='no'>pred_nb_cases</span>), <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='pal1.html'>pal1</a></span>(<span class='fl'>3</span>), <span class='kw'>border</span> <span class='kw'>=</span> <span class='st'>"grey"</span>,
+         <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"Predicted new cases per groups"</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Current time"</span>,
+         <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"Number of new cases (stacked)"</span>)
+ <span class='fu'>axis</span>(<span class='kw'>side</span><span class='kw'>=</span><span class='fl'>1</span>)
+
+}</div><img src='group_score-2.png' alt='' width='540' height='400' /><img src='group_score-3.png' alt='' width='540' height='400' /><img src='group_score-4.png' alt='' width='540' height='400' /></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
