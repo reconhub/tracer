@@ -12,8 +12,9 @@ RoxygenNote: 5.0.1
 Imports: stats, epicontacts
 Suggests: distcrete,
     covr,
-    testthat
-
+    testthat,
+    outbreaks
 Remotes:
   reconhub/distcrete,
-  reconhub/epicontacts
+  reconhub/epicontacts,
+  reconhub/outbreaks
