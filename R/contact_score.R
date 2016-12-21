@@ -91,8 +91,11 @@ contact_score <- function(x, R, lambda, w) {
     Rc <- min(R / lambda, 1)
     
     function(t, visit_days_ago = 1L) {
-        days_to_try <- c()
-        rates <- Rc * vapply(t, function(day) sum(w(day - x)), double(1))
+        L <- length(t)
+        days_ago_to_consider <- seq(0, visit_days_ago-1L, by=1L)
+        days_list <- lapply(days_ago_to_consider, function(i) t-i)
+        days <- unlist(days_list)
+        rates <- Rc * vapply(days, function(day) sum(w(day - x)), double(1))
         1 - exp(-rates)
     }
 }
