@@ -20,6 +20,8 @@ test_that("contact_score gives expected errors", {
     expect_error(contact_score(0, 2, -3, SI$d), msg)
     msg <- "'w' must be a function."
     expect_error(contact_score(0, 2, 1.2, 1:10), msg)
+    msg <- "'visit_days_ago' cannot be less than 1."
+    expect_error(contact_score(0, 2, 1.2, w)(1,0), msg)
 })
 
 
@@ -30,6 +32,10 @@ test_that("contact_score gives expected answers", {
 
     f <- contact_score(0, 2, 3, SI)
 
+    ## expected values
+    expect_equal_to_reference(f(1:100), file="rds/f1.rds")
+    expect_equal(f(10, 10), sum(f(0:10)))
+    
     ## corner cases
     expect_equal(contact_score(0, 0, 3, SI)(10), 0)
 })

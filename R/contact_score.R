@@ -33,7 +33,8 @@
 #' \item \code{t}: the date for which the score should be computed.
 #'
 #' \item \code{visit_days_ago}: the number of days since the last visit to the
-#' contact, defaulting to \code{t - 1}.
+#' contact, defaulting to \code{1}, which means that the last visit happened the
+#' day before \code{t}.
 #'
 #' }
 #' 
@@ -48,7 +49,7 @@
 #'  ## - exposure to cases with onsets: 1, 10, 25
 #'  ## - R = 2.1
 #'  ## - lambda = 3.5
-#'  f <- contact_score(c(1,10,25), R=2.1, lambda=3.5, SI)
+#'  f <- contact_score(c(1,10,25), R = 2.1, lambda = 3.5, SI)
 #'
 #'  ## score for various days
 #'  f(0) # day 0
@@ -89,14 +90,29 @@ contact_score <- function(x, R, lambda, w) {
 
     ## Rc is the probability that an exposure leads to a new case.
     Rc <- min(R / lambda, 1)
+
+    
+    ## In the following, we generate a closure which will return a contact score
+    ## as a function of time, and of the last visit. For convenience, the date
+    ## of the last visit is expressed as 'days ago', defaulting to 1,
+    ## i.e. yesterday. When this number is greater than 1, the scores are summed
+    ## over the 'missed' days, reflecting the fact that symptoms could have
+    ## appeared on these days. The following implementation will be rather slow,
+    ## and might benefit from a Rcpp version.
     
     function(t, visit_days_ago = 1L) {
+        if (visit_days_ago < 1L) {
+            stop("'visit_days_ago' cannot be less than 1.")
+        }
         L <- length(t)
-        days_ago_to_consider <- seq(0, visit_days_ago-1L, by=1L)
-        days_list <- lapply(days_ago_to_consider, function(i) t-i)
-        days <- unlist(days_list)
-        rates <- Rc * vapply(days, function(day) sum(w(day - x)), double(1))
-        1 - exp(-rates)
+        days_ago_to_consider <- seq(0, visit_days_ago - 1L, by = 1L)
+        days_list <- lapply(days_ago_to_consider, function(i) t - i)
+        out <- double(L)
+        for (days in days_list) {
+            rates <- Rc * vapply(days, function(day) sum(w(day - x)), double(1))
+            out <- out + 1 - exp(-rates)
+        }
+        out
     }
 }
 
