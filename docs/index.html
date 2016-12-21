@@ -33,14 +33,171 @@
 
 <p><a href="https://codecov.io/github/reconhub/tracer?branch=master"><img src="https://img.shields.io/codecov/c/github/reconhub/tracer/master.svg" alt="Coverage Status"></a></p>
 <p><a href="https://cran.r-project.org/package=tracer"><img src="http://www.r-pkg.org/badges/version/tracer" alt="CRAN_Status_Badge"></a></p>
-<p><br> # Installing the package</p>
+<p><br></p>
+<div id="installing-the-package" class="section level1">
+<div class="page-header"><h1 class="hasAnchor"><a href="#installing-the-package" class="anchor"> </a>Installing the package</h1></div>
 <p>To benefit from the latest features and bug fixes, install the development, <em>github</em> version of the package using:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools::<span class="kw">install_github</span>(<span class="st">"reconhub/tracer"</span>)</code></pre></div>
 <p>Note that this requires the package <em>devtools</em> installed.</p>
 <p><br></p>
+</div>
+<div id="what-does-it-do" class="section level1">
+<h1 class="hasAnchor"><a href="#what-does-it-do" class="anchor"> </a>What does it do?</h1>
+<p>The main features of the package include:</p>
+<ul><li><p><strong><code>contact_score</code></strong>: generate a scoring function which computes the tracing score for an individual exposed to cases (a &lsquo;contact&rsquo;), for specified dates.</p></li>
+<li><p><strong><code>group_score</code></strong>: generate a scoring function which computes the tracing score for a set of individuals exposed to cases (&lsquo;contacts&rsquo;), for specified dates.</p></li>
+</ul><p><br></p>
+<p><br></p>
+</div>
+<div id="resources" class="section level1">
+<h1 class="hasAnchor"><a href="#resources" class="anchor"> </a>Resources</h1>
+<p><br></p>
+<div id="vignettes" class="section level2">
+<h2 class="hasAnchor"><a href="#vignettes" class="anchor"> </a>Vignettes</h2>
+<p>An overview of <em>tracer</em> is provided below in the worked example below. More detailed tutorials will be distributed as vignettes with the package; to list them, type:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">vignette</span>(<span class="dt">package =</span> <span class="st">"tracer"</span>)
+<span class="co">#&gt; no vignettes found</span></code></pre></div>
+<p><br><br></p>
+</div>
+<div id="websites" class="section level2">
+<h2 class="hasAnchor"><a href="#websites" class="anchor"> </a>Websites</h2>
+<p>The following websites are available:</p>
+<ul><li><p>The official <em>tracer</em> website, providing an overview of the package&rsquo;s functionalities, up-to-date tutorials and documentation: <br><a href="http://www.repidemicsconsortium.org/tracer/" class="uri">http://www.repidemicsconsortium.org/tracer/</a></p></li>
+<li><p>The <em>tracer</em> project on <em>github</em>, useful for developers, contributors, and users wanting to post issues, bug reports and feature requests: <br><a href="http://github.com/reconhub/tracer" class="uri">http://github.com/reconhub/tracer</a></p></li>
+<li><p>The <em>tracer</em> page on CRAN: <br><a href="https://CRAN.R-project.org/package=tracer" class="uri">https://CRAN.R-project.org/package=tracer</a></p></li>
+</ul><p><br><br></p>
+</div>
+<div id="getting-help-online" class="section level2">
+<h2 class="hasAnchor"><a href="#getting-help-online" class="anchor"> </a>Getting help online</h2>
+<p>Bug reports and feature requests should be posted on <em>github</em> using the <a href="http://github.com/reconhub/tracer/issues"><em>issue</em></a> system. All other questions should be posted on the <strong>RECON forum</strong>: <br><a href="http://www.repidemicsconsortium.org/forum/" class="uri">http://www.repidemicsconsortium.org/forum/</a></p>
+<p><br><br></p>
+</div>
+</div>
+<div id="a-quick-overview" class="section level1">
+<h1 class="hasAnchor"><a href="#a-quick-overview" class="anchor"> </a>A quick overview</h1>
+<p>The following worked example provides a brief overview of the package&rsquo;s functionalities.</p>
+<div id="input-parameters" class="section level2">
+<h2 class="hasAnchor"><a href="#input-parameters" class="anchor"> </a>Input parameters</h2>
+<p><em>tracer</em> needs the following input parameters:</p>
+<ul><li><p><strong><code>R</code></strong>: the average effective reproduction number, i.e.&nbsp;the number of secondary infections per case</p></li>
+<li><p><strong><code>lambda</code></strong>: the average number of contacts (infectious or not) reported by cases</p></li>
+<li><p><strong><code>w</code></strong>: the serial interval distribution, i.e.&nbsp;the (discrete) distribution of the time between primary and secondary symptoms.</p></li>
+</ul><p>In practice, <code>w</code> will often need to be discretized from a continuous (typically gamma) distribution, of parameters assumed known. We illustrate this procedure using the <a href="http://github.com/reconhub/distcrete"><em>distcrete</em></a> package:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lambda &lt;-<span class="st"> </span><span class="fl">2.5</span>
+R &lt;-<span class="st"> </span><span class="fl">1.8</span>
+
+<span class="kw">library</span>(distcrete)
+SI.info &lt;-<span class="st"> </span><span class="kw">distcrete</span>(<span class="st">"gamma"</span>, 1L, <span class="dt">w =</span> <span class="dv">0</span>, <span class="dv">10</span>, <span class="fl">0.65</span>)
+SI.info
+<span class="co">#&gt; A discrete distribution</span>
+<span class="co">#&gt;   name: gamma</span>
+<span class="co">#&gt;   parameters:</span>
+<span class="co">#&gt;     shape: 10</span>
+<span class="co">#&gt;     rate: 0.65</span>
+SI &lt;-<span class="st"> </span>SI.info$d
+<span class="kw">plot</span>(SI, <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">50</span>), <span class="dt">type =</span> <span class="st">"h"</span>, <span class="dt">lwd =</span> <span class="dv">3</span>, <span class="dt">main =</span> <span class="st">"Serial Interval"</span>,
+     <span class="dt">xlab =</span> <span class="st">"Days after primary onset"</span>)</code></pre></div>
+<p><img src="figs/param-1.png" width="768"></p>
+</div>
+<div id="tracing-score-for-individual-contact" class="section level2">
+<h2 class="hasAnchor"><a href="#tracing-score-for-individual-contact" class="anchor"> </a>Tracing score for individual contact</h2>
+<p>The function <code>contact_score</code> will generate a scoring function, which only depends on the date at which the scoring is computed (<code>t</code>), and the date of the last visit to this contact:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tracer)
+<span class="kw">args</span>(contact_score)
+<span class="co">#&gt; function (x, R, lambda, w) </span>
+<span class="co">#&gt; NULL</span></code></pre></div>
+<p>For instance, using the parameters defined above, and 3 exposures to cases with onset on days 3, 12, and 34:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">f &lt;-<span class="st"> </span><span class="kw"><a href="reference/contact_score.html">contact_score</a></span>(<span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">12</span>, <span class="dv">24</span>), R, lambda, SI)
+f
+<span class="co">#&gt; function (t, visit_days_ago = 1L) </span>
+<span class="co">#&gt; {</span>
+<span class="co">#&gt;     if (visit_days_ago &lt; 1L) {</span>
+<span class="co">#&gt;         stop("'visit_days_ago' cannot be less than 1.")</span>
+<span class="co">#&gt;     }</span>
+<span class="co">#&gt;     days_ago_to_consider &lt;- seq(0, visit_days_ago - 1L, by = 1L)</span>
+<span class="co">#&gt;     days_list &lt;- lapply(days_ago_to_consider, function(i) t - </span>
+<span class="co">#&gt;         i)</span>
+<span class="co">#&gt;     out &lt;- double(length(t))</span>
+<span class="co">#&gt;     for (days in days_list) {</span>
+<span class="co">#&gt;         rates &lt;- Rc * vapply(days, function(day) sum(w(day - </span>
+<span class="co">#&gt;             x)), double(1))</span>
+<span class="co">#&gt;         out &lt;- out + 1 - exp(-rates)</span>
+<span class="co">#&gt;     }</span>
+<span class="co">#&gt;     out</span>
+<span class="co">#&gt; }</span>
+<span class="co">#&gt; &lt;environment: 0x55e308bef3d8&gt;</span>
+
+## score on day 10:
+<span class="kw">f</span>(<span class="dv">10</span>)
+<span class="co">#&gt; [1] 0.01528583</span>
+
+## score on days 24, 25, 26
+<span class="kw">f</span>(<span class="dv">24</span>:<span class="dv">26</span>)
+<span class="co">#&gt; [1] 0.07796896 0.07592696 0.07186847</span>
+
+## plotting scores over time
+<span class="kw">plot</span>(f, <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">60</span>), <span class="dt">type =</span> <span class="st">"h"</span>, <span class="dt">col =</span> <span class="kw"><a href="reference/pal1.html">pal1</a></span>(<span class="dv">80</span>), 
+     <span class="dt">main =</span> <span class="st">"Tracing score over time"</span>, 
+     <span class="dt">xlab =</span> <span class="st">"Scoring date"</span>, <span class="dt">ylab =</span> <span class="st">"p(new symptoms)"</span>)</code></pre></div>
+<p><img src="figs/contact_score-1.png" width="768"></p>
+</div>
+<div id="tracing-score-for-group-of-contacts" class="section level2">
+<h2 class="hasAnchor"><a href="#tracing-score-for-group-of-contacts" class="anchor"> </a>Tracing score for group of contacts</h2>
+<p>The score of a group of individuals is defined as the expected number of new cases on a given day. The function <code>group_score</code> achieves this computation. It generalises <code>contact_score</code> to a set of contacts, stored as a list. Each component of the list is a vector of dates of onset of the source cases. <code>group_score</code> returns a scoring function which only depends on the date at which the scoring is computed (<code>t</code>), and the dates of the last visit of the contacts.:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">args</span>(group_score)
+<span class="co">#&gt; function (x, R, lambda, w) </span>
+<span class="co">#&gt; NULL</span></code></pre></div>
+<p>We simulate random exposures data for 30 individuals:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">1</span>)
+x &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">30</span>, <span class="kw">sample</span>(<span class="dv">0</span>:<span class="dv">30</span>, <span class="kw">sample</span>(<span class="dv">1</span>:<span class="dv">5</span>), <span class="dt">replace =</span> <span class="ot">TRUE</span>))
+<span class="kw">head</span>(x)
+<span class="co">#&gt; [[1]]</span>
+<span class="co">#&gt; [1] 27 29</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; [[2]]</span>
+<span class="co">#&gt; [1] 21 11 23 15</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; [[3]]</span>
+<span class="co">#&gt; [1]  6 20  3  8</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; [[4]]</span>
+<span class="co">#&gt; [1] 14 18</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; [[5]]</span>
+<span class="co">#&gt; [1]  3 22 12</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; [[6]]</span>
+<span class="co">#&gt; [1] 24  0 14 22 21</span>
+
+g &lt;-<span class="st"> </span><span class="kw"><a href="reference/group_score.html">group_score</a></span>(x, R, lambda, SI)
+<span class="kw">g</span>(<span class="kw">c</span>(<span class="dv">10</span>,<span class="dv">20</span>,<span class="dv">30</span>)) <span class="co"># Exp nb of new cases at t=10,20,30</span>
+<span class="co">#&gt; [1] 0.1973302 2.1070930 2.5574013</span>
+
+
+<span class="kw">plot</span>(g, <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">100</span>), <span class="dt">type =</span> <span class="st">"h"</span>, , <span class="dt">col =</span> <span class="kw"><a href="reference/pal1.html">pal1</a></span>(<span class="dv">80</span>), 
+     <span class="dt">main =</span> <span class="st">"Expected number of new cases"</span>, 
+     <span class="dt">xlab =</span> <span class="st">"Current time"</span>, <span class="dt">ylab =</span> <span class="st">"Number of cases"</span>)</code></pre></div>
+<p><img src="figs/unnamed-chunk-2-1.png" width="768"></p>
+<p>We can extend this to several groups with different sizes and incidence dynamics:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">1</span>)
+x1 &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">30</span>, <span class="kw">sample</span>(<span class="dv">0</span>:<span class="dv">20</span>, <span class="kw">sample</span>(<span class="dv">1</span>:<span class="dv">6</span>), <span class="dt">replace =</span> <span class="ot">TRUE</span>)) <span class="co"># early wave</span>
+x2 &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">140</span>, <span class="kw">sample</span>(<span class="dv">15</span>:<span class="dv">70</span>, <span class="kw">sample</span>(<span class="dv">1</span>:<span class="dv">3</span>), <span class="dt">replace =</span> <span class="ot">TRUE</span>)) <span class="co"># large middle wave</span>
+x3 &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">140</span>, <span class="kw">sample</span>(<span class="dv">65</span>:<span class="dv">80</span>, <span class="kw">sample</span>(<span class="dv">1</span>:<span class="dv">4</span>), <span class="dt">replace =</span> <span class="ot">TRUE</span>)) <span class="co"># late wave</span>
+list_g &lt;-<span class="st"> </span><span class="kw">lapply</span>(<span class="kw">list</span>(x1, x2, x3), group_score, R, lambda, SI)
+
+pred_nb_cases &lt;-<span class="st"> </span><span class="kw">sapply</span>(list_g, function(g) <span class="kw">g</span>(<span class="dv">1</span>:<span class="dv">120</span>))
+
+<span class="kw">barplot</span>(<span class="kw">t</span>(pred_nb_cases), <span class="dt">col =</span> <span class="kw"><a href="reference/pal1.html">pal1</a></span>(<span class="dv">3</span>), <span class="dt">border =</span> <span class="st">"grey"</span>, 
+        <span class="dt">main =</span> <span class="st">"Predicted new cases per groups"</span>, <span class="dt">xlab =</span> <span class="st">"Current time"</span>, 
+        <span class="dt">ylab =</span> <span class="st">"Number of new cases (stacked)"</span>)
+<span class="kw">axis</span>(<span class="dt">side=</span><span class="dv">1</span>)</code></pre></div>
+<p><img src="figs/plotgroups-1.png" width="768"></p>
+</div>
+</div>
 <div id="contributors-by-alphabetic-order" class="section level1">
-<div class="page-header"><h1 class="hasAnchor"><a href="#contributors-by-alphabetic-order" class="anchor"> </a>Contributors (by alphabetic order):</h1></div>
+<h1 class="hasAnchor"><a href="#contributors-by-alphabetic-order" class="anchor"> </a>Contributors (by alphabetic order):</h1>
 <ul><li><a href="https://github.com/thibautjombart">Thibaut Jombart</a></li>
+<li><a href="https://github.com/dirkschumacher">Dirk Schumacher</a></li>
 </ul><p>Please note that this project is released with a <a href="CONDUCT.md">Contributor Code of Conduct</a>. By participating in this project you agree to abide by its terms.</p>
 <p><strong>Maintainer:</strong> Thibaut Jombart (<a href="mailto:thibautjombart@gmail.com">thibautjombart@gmail.com</a>)</p>
 </div>

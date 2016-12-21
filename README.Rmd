@@ -144,7 +144,7 @@ f(10)
 f(24:26)
 
 ## plotting scores over time
-plot(f, xlim = c(0, 60), type = "h", 
+plot(f, xlim = c(0, 60), type = "h", col = pal1(80), 
      main = "Tracing score over time", 
      xlab = "Scoring date", ylab = "p(new symptoms)")
 
@@ -170,7 +170,7 @@ g <- group_score(x, R, lambda, SI)
 g(c(10,20,30)) # Exp nb of new cases at t=10,20,30
 
 
-plot(g, xlim = c(0, 100), type = "h", 
+plot(g, xlim = c(0, 100), type = "h", , col = pal1(80), 
      main = "Expected number of new cases", 
      xlab = "Current time", ylab = "Number of cases")
 

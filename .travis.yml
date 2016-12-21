@@ -6,7 +6,9 @@ cache: packages
 
 warnings_are_errors: false
 
-r_github_packages: reconhub/distcrete
+r_github_packages:
+	reconhub/distcrete
+	reconhub/epicontacts
 
 after_success:
   - Rscript -e 'covr::codecov()'
