@@ -141,21 +141,23 @@ For instance, using the parameters defined above, and 3 exposures to cases with 
 ```r
 f <- contact_score(c(3, 12, 24), R, lambda, SI)
 f
-#> function(t, visit_days_ago = 1L) {
-#>         if (visit_days_ago < 1L) {
-#>             stop("'visit_days_ago' cannot be less than 1.")
-#>         }
-#> 
-#>         days_ago_to_consider <- seq(0, visit_days_ago - 1L, by = 1L)
-#>         days_list <- lapply(days_ago_to_consider, function(i) t - i)
-#>         out <- double(length(t))
-#>         for (days in days_list) {
-#>             rates <- Rc * vapply(days, function(day) sum(w(day - x)), double(1))
-#>             out <- out + 1 - exp(-rates)
-#>         }
-#>         out
+#> function (t, visit_days_ago = 1L) 
+#> {
+#>     if (visit_days_ago < 1L) {
+#>         stop("'visit_days_ago' cannot be less than 1.")
 #>     }
-#> <environment: 0x55e3097524b8>
+#>     days_ago_to_consider <- seq(0, visit_days_ago - 1L, by = 1L)
+#>     days_list <- lapply(days_ago_to_consider, function(i) t - 
+#>         i)
+#>     out <- double(length(t))
+#>     for (days in days_list) {
+#>         rates <- Rc * vapply(days, function(day) sum(w(day - 
+#>             x)), double(1))
+#>         out <- out + 1 - exp(-rates)
+#>     }
+#>     out
+#> }
+#> <environment: 0x55e308c752b8>
 
 ## score on day 10:
 f(10)

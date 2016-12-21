@@ -109,6 +109,7 @@ contact_score <- function(x, R, lambda, w) {
         days_list <- lapply(days_ago_to_consider, function(i) t - i)
         out <- double(length(t))
         for (days in days_list) {
+            ## rates <- Rc * rowSums(w(outer(days, x, "-")))
             rates <- Rc * vapply(days, function(day) sum(w(day - x)), double(1))
             out <- out + 1 - exp(-rates)
         }
