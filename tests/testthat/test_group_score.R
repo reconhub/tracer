@@ -20,6 +20,8 @@ test_that("group_score gives expected errors", {
     expect_error(group_score(0, 2, -3, SI$d), msg)
     msg <- "'w' must be a function."
     expect_error(group_score(0, 2, 1.2, 1:10), msg)
+    msg <- "'visit_days_ago' cannot be less than 1."
+    expect_error(group_score(0, 2, 1.2, w)(list(a = 1,b = 2), 0), msg)
 
 })
 
@@ -42,11 +44,17 @@ test_that("group_score gives expected answers", {
     expect_equal(g(10), g(10:12)[1])
 
 
-    ## group = sum of inviv
+    ## group = sum of inviv...
     dates <- 11:25
     list_f <- lapply(x, contact_score, 2, 3, SI)
+
+    ## ... with no missed visits
     res_sum_indiv <- Reduce("+", lapply(list_f, function(f) f(dates)))
     expect_equal(g(dates), res_sum_indiv)
+
+    ## ... with 2 days missed
+    res_sum_indiv2 <- Reduce("+", lapply(list_f, function(f) f(dates, 3L)))
+    expect_equal(g(dates, 3L), res_sum_indiv2)
     
 })
 
