@@ -31,26 +31,45 @@
 #'
 #' @examples
 #' if (require(distcrete)) {
+#' ## simulate data
+#' set.seed(1)
+#' x <- replicate(30, sample(0:30, sample(1:5), replace = TRUE))
+#' head(x)
+#'
 #'  ## generate serial interval distribution
 #'  SI <- distcrete("gamma", 1L, w = 0, 10, 0.65)$d
 #'  plot(SI, type="h", xlim=c(0,50), xlab = "Days")
 #'  title("Serial interval distribution")
 #'
-#'  ## get tracing score function for:
-#'  ## - exposure to cases with onsets: 1, 10, 25
-#'  ## - R = 2.1
-#'  ## - lambda = 3.5
-#'  f <- contact_score(c(1,10,25), R=2.1, lambda=3.5, SI)
+#' ## get scoring function
+#' g <- group_score(x, R, lambda, SI$d)
+#' g(c(10,20,30)) # Exp nb of new cases at t=10,20,30
 #'
-#'  ## score for various days
-#'  f(0) # day 0
-#'  f(10) # day 10
-#'  f(10:20)
+#' plot(g, xlim = c(0, 100), type = "h", 
+#'     main = "Expected number of new cases", 
+#'     xlab = "Current time", ylab = "Number of cases")
 #'
-#'  ## plot score for various days
-#'  plot(f, type = "h", xlim = c(0,60), col = pal1(100),
-#'       xlab = "Date", ylab = "P(new symptoms)")
-#'  title("Contact score over time")
+#' set.seed(1)
+#' ## early wave
+#' x1 <- replicate(30, sample(0:20, sample(1:6), replace = TRUE))
+#'
+#' ## large middle wave
+#' x2 <- replicate(140, sample(15:70, sample(1:3), replace = TRUE))
+#'
+#' ## late wave
+#' x3 <- replicate(140, sample(65:80, sample(1:4), replace = TRUE))
+#'
+#' ## get scoring functions for every group
+#' list_g <- lapply(list(x1, x2, x3), group_score, R, lambda, SI$d)
+#'
+#' ## get predictions for days 1:120
+#' pred_nb_cases <- sapply(list_g, function(g) g(1:120))
+#'
+#' barplot(t(pred_nb_cases), col = pal1(3), border = "grey", 
+#'         main = "Predicted new cases per groups", xlab = "Current time", 
+#'         ylab = "Number of new cases (stacked)")
+#' axis(side=1)
+#' 
 #' }
 group_score <- function(x, R, lambda, w) {
     ## The returned object will be a function with enclosed data; its only
