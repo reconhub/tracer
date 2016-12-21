@@ -27,8 +27,15 @@
 #' @details See the \code{distcrete} package for generating discretized
 #'     distributions at: \url{http://github.com/reconhub/distcrete}.
 #'
-#' @return A function with one single argument 't', which is the date for which
-#'     the score should be computed.
+#' @return A function with two arguments:
+#' \itemize{
+#'
+#' \item \code{t}: the date for which the score should be computed.
+#'
+#' \item \code{visit_days_ago}: the number of days since the last visit to the
+#' contact, defaulting to \code{t - 1}.
+#'
+#' }
 #' 
 #' @examples
 #' if (require(distcrete)) {
@@ -83,7 +90,8 @@ contact_score <- function(x, R, lambda, w) {
     ## Rc is the probability that an exposure leads to a new case.
     Rc <- min(R / lambda, 1)
     
-    function(t) { 
+    function(t, visit_days_ago = 1L) {
+        days_to_try <- c()
         rates <- Rc * vapply(t, function(day) sum(w(day - x)), double(1))
         1 - exp(-rates)
     }
