@@ -22,8 +22,16 @@ from primary to secondary symptom onset. We recommend using the
 details).}
 }
 \value{
-A function with one single argument 't', which is the date for which
-    the score should be computed.
+A function with two arguments:
+\itemize{
+
+\item \code{t}: the date for which the score should be computed.
+
+\item \code{visit_days_ago}: the number of days since the last visit to the
+contact, defaulting to \code{1}, which means that the last visit happened the
+day before \code{t}.
+
+}
 }
 \description{
 This function compute the tracing score of a contact, i.e. an individual who
@@ -46,7 +54,7 @@ if (require(distcrete)) {
  ## - exposure to cases with onsets: 1, 10, 25
  ## - R = 2.1
  ## - lambda = 3.5
- f <- contact_score(c(1,10,25), R=2.1, lambda=3.5, SI)
+ f <- contact_score(c(1,10,25), R = 2.1, lambda = 3.5, SI)
 
  ## score for various days
  f(0) # day 0

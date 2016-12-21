@@ -18,9 +18,17 @@
 #' @details See the \code{distcrete} package for generating discretized
 #'     distributions at: \url{http://github.com/reconhub/distcrete}.
 #'
-#' @return A function with one single argument 't', which is the date for which
-#'     the score should be computed.
-#' 
+#' @return A function with two arguments:
+#' \itemize{
+#'
+#' \item \code{t}: the date for which the score should be computed.
+#'
+#' \item \code{visit_days_ago}: the number of days since the last visit to the
+#' contact, defaulting to \code{1}, which means that the last visit happened the
+#' day before \code{t}.
+#'
+#' }
+#'
 #' @examples
 #' if (require(distcrete)) {
 #'  ## generate serial interval distribution
@@ -74,20 +82,28 @@ group_score <- function(x, R, lambda, w) {
     ## Rc is the probability that an exposure leads to a new case.
     Rc <- min(R / lambda, 1)
 
-    ## This function computes p(x_i = t) for one individual
-    score_one_indiv <- function(onset, Rc, w, t) {
-        if (length(t) > 1) {
-            rates <- Rc * vapply(t, function(day) sum(w(day - onset)), double(1))
-            1 - exp(-rates)
-        } else {
-            rate <- Rc * sum(w(t - onset))
-            1 - exp(-rate)
+    ## This function computes p(x_i = t) for one individual.  This function is
+    ## similar to contact_score except that it does not enclose inputs. See
+    ## comments in contact_score.R for details.
+
+    score_one_indiv <- function(onset, Rc, w, t, visit_days_ago) {
+        if (visit_days_ago < 1L) {
+            stop("'visit_days_ago' cannot be less than 1.")
         }
+
+        days_ago_to_consider <- seq(0, visit_days_ago - 1L, by = 1L)
+        days_list <- lapply(days_ago_to_consider, function(i) t - i)
+        out <- double(length(t))
+        for (days in days_list) {
+            rates <- Rc * vapply(t, function(day) sum(w(day - onset)), double(1))
+            out <- out + 1 - exp(-rates)
+        }
+        return(out)
     }
 
     
-    function(t) {
-        indiv_scores_over_t <- lapply(x, score_one_indiv, Rc, w, t)
+    function(t, visit_days_ago = 1L) {
+        indiv_scores_over_t <- lapply(x, score_one_indiv, Rc, w, t, visit_days_ago)
         Reduce("+", indiv_scores_over_t)
     }
 }

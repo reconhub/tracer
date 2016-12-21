@@ -23,8 +23,16 @@ from primary to secondary symptom onset. We recommend using the
 details).}
 }
 \value{
-A function with one single argument 't', which is the date for which
-    the score should be computed.
+A function with two arguments:
+\itemize{
+
+\item \code{t}: the date for which the score should be computed.
+
+\item \code{visit_days_ago}: the number of days since the last visit to the
+contact, defaulting to \code{1}, which means that the last visit happened the
+day before \code{t}.
+
+}
 }
 \description{
 This function compute the tracing score of a group of contacts, i.e. a set of

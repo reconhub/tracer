@@ -104,10 +104,10 @@ contact_score <- function(x, R, lambda, w) {
         if (visit_days_ago < 1L) {
             stop("'visit_days_ago' cannot be less than 1.")
         }
-        L <- length(t)
+
         days_ago_to_consider <- seq(0, visit_days_ago - 1L, by = 1L)
         days_list <- lapply(days_ago_to_consider, function(i) t - i)
-        out <- double(L)
+        out <- double(length(t))
         for (days in days_list) {
             rates <- Rc * vapply(days, function(day) sum(w(day - x)), double(1))
             out <- out + 1 - exp(-rates)
